@@ -1,2 +1,4 @@
 .idea/
 **/__pycache__/*
+app/data_base/R_443Y_shop.db
+app/config.py
