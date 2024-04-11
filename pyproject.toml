@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "tel-bot-super-shop"
+version = "0.1.0"
+description = ""
+authors = ["aleksey88bsuir <aleksey88bsuir@yandex.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+aiogram = "^3.4.1"
+sqlalchemy = "^2.0.29"
+aiosqlite = "^0.20.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
