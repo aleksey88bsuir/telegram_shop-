@@ -33,7 +33,7 @@ class Category(Base):
     is_active: Mapped[bool] = mapped_column(Boolean)
 
     item_rel: Mapped[List['Item']] = relationship(
-        back_populates='categories_rel')
+        back_populates='category_rel')
 
 
 class Item(Base):

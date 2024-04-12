@@ -15,7 +15,9 @@ async def app_start(message: Message):
 
 @router.message(F.text == "Каталог")
 async def catalog(message: Message):
-    await message.answer('Выберите категорию')
+    await message.answer('Выберите категорию',
+                         reply_markup=await kw.show_all_categories())
+
 
 #
 # @router.message(F.text == "Корзина")
