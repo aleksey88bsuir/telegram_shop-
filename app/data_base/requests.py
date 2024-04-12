@@ -4,5 +4,6 @@ from sqlalchemy import select, update, delete
 
 async def get_categories():
     async with async_session() as session:
-        categories = await session.scalars(select(Category))
+        categories = await session.scalars(select(Category).filter(
+            Category.is_active == True))
         return categories

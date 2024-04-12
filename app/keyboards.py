@@ -19,4 +19,4 @@ async def show_all_categories():
         main_keyboard.add(InlineKeyboardButton(
             text=category.name,
             callback_data=f'category_{category.id}'))
-    return main_keyboard.adjust(3).as_markup()
+    return main_keyboard.adjust(2).as_markup()
