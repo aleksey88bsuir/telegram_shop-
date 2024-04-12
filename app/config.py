@@ -9,7 +9,7 @@ AUTHOR = 'R-443Y_company'
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATABASE = os.path.join(f'sqlite+aiosqlite:///{BASE_DIR}/data_base/', NAME_DB)
-ECHO = True
+ECHO = False
 
 
 if __name__ == "__main__":

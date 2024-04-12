@@ -19,6 +19,15 @@ async def catalog(message: Message):
                          reply_markup=await kw.show_all_categories())
 
 
+@router.callback_query(F.data.startswith('category_'))
+async def catalog(callback: CallbackQuery):
+    await callback.message.answer('Выберите товар')
+    await callback.message.edit_text(
+        'Выберите товар',
+        reply_markup=await kw.show_all_items_from_category(
+            int(callback.data.split('_')[1])))
+
+
 #
 # @router.message(F.text == "Корзина")
 # async def basket(message: Message):
