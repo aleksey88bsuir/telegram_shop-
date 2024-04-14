@@ -1,3 +1,5 @@
+import asyncio
+
 from app.data_base.models import *
 from sqlalchemy import select, update, delete
 
@@ -7,13 +9,19 @@ async def set_user(tg_id) -> User.id_tg:
         user = await session.scalar(select(User.id_tg == tg_id))
         if not user:
             session.add(User(id_tg=tg_id))
-            session.commit()
+            await session.commit()
 
 
 async def get_users() -> list[User]:
     async with async_session() as session:
         users = await session.scalars(select(User))
         return users
+
+
+async def set_item(data: dict):
+    async with async_session() as session:
+        session.add(Item(**data))
+        await session.commit()
 
 
 async def get_categories() -> list[Category]:

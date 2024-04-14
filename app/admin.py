@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
 import app.keyboards as kw
-from app.data_base.requests import get_users
+from app.data_base.requests import get_users, set_item
 
 
 admin = Router()
@@ -14,6 +14,14 @@ admin = Router()
 class NewsLetter(StatesGroup):
     message = State()
     confirm = State()
+
+
+class AddItem(StatesGroup):
+    name = State()
+    description = State()
+    price = State()
+    photo = State()
+    category = State()
 
 
 class AdminProtect(Filter):
@@ -46,3 +54,50 @@ async def news_letter_message(message: Message, state: FSMContext):
             pass
     await message.answer('Рассылка успешно завершена')
     await state.clear()
+
+
+@admin.message(AdminProtect(), Command('add_item'))
+async def add_item(message: Message, state: FSMContext):
+    await state.set_state(AddItem.name)
+    await message.answer('Выберите название товара')
+
+
+@admin.message(AdminProtect(), AddItem.name)
+async def add_item_name(message: Message, state: FSMContext):
+    await state.update_data(name=message.text)
+    await state.set_state(AddItem.category)
+    await message.answer('Выберите категорию товара',
+                         reply_markup=await kw.show_all_categories())
+
+
+@admin.callback_query(AdminProtect(), AddItem.category)
+async def add_item_category(callback: CallbackQuery, state: FSMContext):
+    await state.update_data(category=callback.data.split('_')[1])
+    await state.set_state(AddItem.price)
+    await callback.answer('Категория успешно выбрана')
+    await callback.message.answer('Введите цену товара')
+
+
+@admin.message(AdminProtect(), AddItem.price)
+async def add_item_price(message: Message, state: FSMContext):
+    await state.update_data(price=int(message.text)*100)
+    await state.set_state(AddItem.photo)
+    await message.answer('Выберите путь к фотографии товара')
+
+
+@admin.message(AdminProtect(), AddItem.photo, F.photo)
+async def add_item_price(message: Message, state: FSMContext):
+    await state.update_data(photo=message.photo[-1].file_id)
+    await state.set_state(AddItem.description)
+    await message.answer('Выберите описание товара')
+
+
+@admin.message(AdminProtect(), AddItem.description)
+async def add_item_price(message: Message, state: FSMContext):
+    await state.update_data(description=message.text)
+    data = await state.get_data()
+    data['is_active'] = 1
+    await set_item(data)
+    await message.answer('Товар успешно добавлен')
+    await state.clear()
+
