@@ -17,7 +17,8 @@ async def app_start(message: Message | CallbackQuery):
         await message.answer("Добро пожаловать в интернет-магазин!",
                              reply_markup=kw.main)
     else:
-        await message.message.edit_text("Добро пожаловать в интернет-магазин!",
+        await message.answer('Вы вернулись на главную')
+        await message.message.answer("Добро пожаловать в интернет-магазин!",
                                         reply_markup=kw.main)
 
 
@@ -29,8 +30,8 @@ async def catalog(callback: CallbackQuery):
 
 
 @router.callback_query(F.data.startswith('category_'))
-async def category(callback: CallbackQuery):
-    await callback.message.edit_text(
+async def category(callback: Message | CallbackQuery):
+    await callback.message.answer(
         'Выберите товар',
         reply_markup=await kw.show_all_items_from_category(
             int(callback.data.split('_')[1])))
@@ -40,8 +41,7 @@ async def category(callback: CallbackQuery):
 async def items(callback: CallbackQuery):
     item_id = int(callback.data.split('_')[1])
     item = await get_item_by_id(item_id)
-    await callback.message.edit_text(f'{item.name}\n'
-                                     f'{item.description}\n'
-                                     f'{item.price/100} BYN',
-                                     reply_markup=await kw.show_order_form(
-                                         item_id))
+    await callback.message.answer_photo(
+        photo=item.photo,
+        caption=f'{item.name}\n {item.description}\n {item.price/100} BYN',
+        reply_markup=await kw.show_order_form(item_id))
