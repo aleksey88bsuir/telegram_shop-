@@ -1,15 +1,22 @@
 from aiogram.types import (ReplyKeyboardMarkup, KeyboardButton,
-                           InlineKeyboardMarkup, InlineKeyboardButton)
+                           InlineKeyboardMarkup, InlineKeyboardButton,
+                           ReplyKeyboardRemove)
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from app.data_base.requests import get_categories, get_items_by_category
+from app.data_base.requests import (get_categories, get_items_by_category,
+                                    get_item_by_id)
 
 
-main = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='Каталог')],
-                                     [KeyboardButton(text='Корзина'),
-                                      KeyboardButton(text='Контакты')]],
-                           resize_keyboard=True,
-                           input_field_placeholder='Выберите пункт меню')
+main = InlineKeyboardMarkup(
+    inline_keyboard=[[InlineKeyboardButton(text='Каталог',
+                                           callback_data='catalog')],
+                     [InlineKeyboardButton(text='Корзина',
+                                           callback_data='basket'),
+                     InlineKeyboardButton(text='Контакты',
+                                          callback_data='contacts')]])
+
+to_main = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(
+    text='На главную', callback_data='to_main',)]])
 
 
 async def show_all_categories():
@@ -30,5 +37,19 @@ async def show_all_items_from_category(category_id: int):
             text=item.name,
             callback_data=f'item_{item.id}'))
     items_keyboard.add(InlineKeyboardButton(text='назад',
-                                            callback_data='to_main'))
+                                            callback_data='catalog'))
     return items_keyboard.adjust(1).as_markup()
+
+
+async def show_item_by_id(item_id: int):
+    item = await get_item_by_id(item_id=item_id)
+    item_key = InlineKeyboardBuilder()
+    item_key.add(InlineKeyboardButton(
+            text=item.name,
+            callback_data=f'item_{item.id}'))
+    item_key.add(InlineKeyboardButton(text='назад', callback_data='to_main'))
+    return item_key.adjust(1).as_markup()
+
+
+def remove_keyboard():
+    ReplyKeyboardRemove()
