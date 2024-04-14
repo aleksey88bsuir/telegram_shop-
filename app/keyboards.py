@@ -4,7 +4,7 @@ from aiogram.types import (ReplyKeyboardMarkup, KeyboardButton,
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from app.data_base.requests import (get_categories, get_items_by_category,
-                                    get_item_by_id)
+                                    get_item_by_id, get_category_by_item)
 
 
 main = InlineKeyboardMarkup(
@@ -43,12 +43,31 @@ async def show_all_items_from_category(category_id: int):
 
 async def show_item_by_id(item_id: int):
     item = await get_item_by_id(item_id=item_id)
+    category_id = await get_category_by_item(item_id)
     item_key = InlineKeyboardBuilder()
     item_key.add(InlineKeyboardButton(
             text=item.name,
             callback_data=f'item_{item.id}'))
-    item_key.add(InlineKeyboardButton(text='назад', callback_data='to_main'))
+    item_key.add(InlineKeyboardButton(text='назад',
+                                      callback_data=f'category_{category_id}'))
+    item_key.add(InlineKeyboardButton(text='на главную',
+                                      callback_data='to_main'))
     return item_key.adjust(1).as_markup()
+
+
+async def show_order_form(item_id: int):
+    item = await get_item_by_id(item_id=item_id)
+    category_id = await get_category_by_item(item_id)
+    item_key = InlineKeyboardBuilder()
+    item_key.add(InlineKeyboardButton(
+            text='Положить в корзину',
+            callback_data=f'item_{item.id}'))
+    item_key.add(InlineKeyboardButton(text='назад',
+                                      callback_data=f'category_{category_id}'))
+    item_key.add(InlineKeyboardButton(text='на главную',
+                                      callback_data='to_main'))
+    return item_key.adjust(1).as_markup()
+
 
 
 def remove_keyboard():
